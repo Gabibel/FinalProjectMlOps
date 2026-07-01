@@ -1,0 +1,36 @@
+name: CI — PR to dev
+
+on:
+  pull_request:
+    branches: [dev]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Lint
+        run: |
+          pip install flake8
+          flake8 backend/ --max-line-length=120 --exclude=backend/tests/
+
+      - name: Unit tests
+        run: pytest -v
+
+  build-docker:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image (no push)
+        run: docker build -t mlops-backend:pr-${{ github.sha }} ./backend
