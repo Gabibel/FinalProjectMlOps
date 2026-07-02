@@ -3,8 +3,17 @@ import logging
 import mlflow.pyfunc
 from mlflow.exceptions import MlflowException
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "*").split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 MODEL_NAME = os.environ.get("MODEL_NAME", "BatteryHealthModel")
 MODEL_STAGE = os.environ.get("MODEL_STAGE", "Production")
