@@ -17,6 +17,7 @@ app.add_middleware(
 
 MODEL_NAME = os.environ.get("MODEL_NAME", "BatteryHealthModel")
 MODEL_STAGE = os.environ.get("MODEL_STAGE", "Production")
+FEATURE_COUNT = 9
 
 model = None
 tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
@@ -33,6 +34,15 @@ if tracking_uri:
         )
 
 
+def validate_features(data: dict) -> list:
+    if "features" not in data:
+        raise ValueError("Missing 'features' key")
+    features = data["features"]
+    if not isinstance(features, list) or len(features) != FEATURE_COUNT:
+        raise ValueError(f"'features' must be a list of {FEATURE_COUNT} numbers")
+    return [float(v) for v in features]
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
@@ -42,5 +52,9 @@ def health():
 def predict(data: dict):
     if model is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
-    result = model.predict([data["features"]])
+    try:
+        features = validate_features(data)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    result = model.predict([features])
     return {"prediction": result.tolist() if hasattr(result, "tolist") else list(result)}
