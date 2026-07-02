@@ -35,4 +35,3 @@ def predict(data: dict):
         raise HTTPException(status_code=503, detail="Model not loaded")
     result = model.predict([data["features"]])
     return {"prediction": result.tolist() if hasattr(result, "tolist") else list(result)}
-
