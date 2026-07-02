@@ -1,0 +1,5 @@
+outs:
+- md5: 268d192f55b18ef2ae2ccae4bbd2d681
+  size: 2485215
+  hash: md5
+  path: battery_data.csv
