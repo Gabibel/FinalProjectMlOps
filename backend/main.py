@@ -102,4 +102,3 @@ def predict(data: dict):
         raise HTTPException(status_code=500, detail=f"Inference failed: {e}")
 
     return {"prediction": result.tolist() if hasattr(result, "tolist") else list(result)}
-
