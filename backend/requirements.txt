@@ -5,4 +5,5 @@ httpx==0.27.2
 mlflow
 pandas
 scikit-learn
-numpy   
+numpy
+prometheus-fastapi-instrumentator==7.0.0
