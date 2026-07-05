@@ -39,6 +39,8 @@ jobs:
     environment: production
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Docker login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
@@ -48,10 +50,9 @@ jobs:
           docker tag ${{ secrets.DOCKERHUB_USERNAME }}/mlops-backend:staging ${{ secrets.DOCKERHUB_USERNAME }}/mlops-backend:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/mlops-backend:latest
 
-      - name: Retag + push frontend (staging -> latest)
+      - name: Build + push frontend (production build with prod API URL)
         run: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mlops-frontend:staging
-          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/mlops-frontend:staging ${{ secrets.DOCKERHUB_USERNAME }}/mlops-frontend:latest
+          docker build --build-arg VITE_API_URL=https://mlops-backend-production.onrender.com -t ${{ secrets.DOCKERHUB_USERNAME }}/mlops-frontend:latest ./frontend
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/mlops-frontend:latest
 
       - name: Trigger production deploy hook
