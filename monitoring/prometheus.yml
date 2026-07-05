@@ -11,4 +11,9 @@ scrape_configs:
     scheme: https
     static_configs:
       - targets: ["mlops-backend-staging.onrender.com"]
-      
+
+  - job_name: "backend-production"
+    metrics_path: /metrics
+    scheme: https
+    static_configs:
+      - targets: ["mlops-backend-production.onrender.com"]
