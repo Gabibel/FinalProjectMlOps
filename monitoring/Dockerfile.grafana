@@ -1,0 +1,4 @@
+FROM grafana/grafana:11.2.0
+COPY grafana/provisioning/datasources/prometheus-prod.yml /etc/grafana/provisioning/datasources/prometheus.yml
+COPY grafana/provisioning/dashboards/dashboard-provider.yml /etc/grafana/provisioning/dashboards/dashboard-provider.yml
+COPY grafana/dashboards/battery-monitoring.json /var/lib/grafana/dashboards/battery-monitoring.json
