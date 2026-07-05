@@ -71,7 +71,7 @@ jobs:
 
       - name: Build + push frontend
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/mlops-frontend:staging ./frontend
+          docker build --build-arg VITE_API_URL=https://mlops-backend-staging.onrender.com -t ${{ secrets.DOCKERHUB_USERNAME }}/mlops-frontend:staging ./frontend
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/mlops-frontend:staging
 
   deploy-staging:
