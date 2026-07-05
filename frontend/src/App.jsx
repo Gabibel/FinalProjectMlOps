@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./App.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
@@ -14,6 +15,18 @@ const FIELDS = [
   { key: "Ambient_Temp_C", label: "Ambient Temperature (°C)" },
 ];
 
+const EXAMPLE_VALUES = {
+  Cycle: "10",
+  Capacity_Ah: "1.95",
+  Internal_Resistance_Ohm: "0.047",
+  Temperature_C: "32.8",
+  Voltage_Max_V: "4.19",
+  Voltage_Min_V: "3.2",
+  Charge_Time_s: "3600",
+  Discharge_Time_s: "3000",
+  Ambient_Temp_C: "32.8",
+};
+
 export default function App() {
   const [values, setValues] = useState(
     Object.fromEntries(FIELDS.map((f) => [f.key, ""]))
@@ -24,6 +37,12 @@ export default function App() {
 
   function handleChange(key, value) {
     setValues((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function fillExample() {
+    setValues(EXAMPLE_VALUES);
+    setPrediction(null);
+    setError(null);
   }
 
   async function handleSubmit(e) {
@@ -63,33 +82,47 @@ export default function App() {
   }
 
   return (
-    <div style={{ maxWidth: 480, margin: "40px auto", fontFamily: "sans-serif" }}>
-      <h1>Battery Health Predictor</h1>
-      <form onSubmit={handleSubmit}>
-        {FIELDS.map((f) => (
-          <div key={f.key} style={{ marginBottom: 12 }}>
-            <label style={{ display: "block", marginBottom: 4 }}>{f.label}</label>
-            <input
-              type="number"
-              step="any"
-              value={values[f.key]}
-              onChange={(e) => handleChange(f.key, e.target.value)}
-              required
-              style={{ width: "100%", padding: 8 }}
-            />
-          </div>
-        ))}
-        <button type="submit" disabled={loading} style={{ padding: "8px 16px" }}>
-          {loading ? "Predicting..." : "Predict"}
-        </button>
-      </form>
-
-      {prediction !== null && (
-        <p style={{ marginTop: 16 }}>
-          Predicted SOH: <strong>{Array.isArray(prediction) ? prediction[0] : prediction}</strong>
+    <div className="app">
+      <div className="card">
+        <h1 className="title">Battery Health Predictor</h1>
+        <p className="subtitle">
+          Enter the 9 battery cycle measurements to estimate State of Health (SOH).
         </p>
-      )}
-      {error && <p style={{ marginTop: 16, color: "red" }}>{error}</p>}
+
+        <button type="button" className="example-btn" onClick={fillExample}>
+          Fill with example values
+        </button>
+
+        <form onSubmit={handleSubmit}>
+          <div className="grid">
+            {FIELDS.map((f) => (
+              <div key={f.key} className="field">
+                <label htmlFor={f.key}>{f.label}</label>
+                <input
+                  id={f.key}
+                  type="number"
+                  step="any"
+                  value={values[f.key]}
+                  onChange={(e) => handleChange(f.key, e.target.value)}
+                  required
+                />
+              </div>
+            ))}
+          </div>
+
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? "Predicting..." : "Predict"}
+          </button>
+        </form>
+
+        {prediction !== null && (
+          <div className="result success">
+            Predicted SOH
+            <strong>{Array.isArray(prediction) ? prediction[0] : prediction}</strong>
+          </div>
+        )}
+        {error && <div className="result error">{error}</div>}
+      </div>
     </div>
   );
 }
